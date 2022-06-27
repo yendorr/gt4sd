@@ -140,3 +140,12 @@ logs
 test
 .DS_Store
 sandbox.py
+
+*.lock
+notebooks/*.owl
+notebooks/clus/*.arff
+notebooks/clus/*.s
+notebooks/clus/*.xval
+notebooks/clus/*.out
+notebooks/clus/*.txt
+
