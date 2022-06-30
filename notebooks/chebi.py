@@ -3,7 +3,10 @@ from tqdm.auto import tqdm
 from collections import defaultdict
 from collections import Counter
 import re
+
 import pickle
+from os.path import exists
+import wget
 
 # !pip install kora -q
 # import kora.install.rdkit
@@ -102,13 +105,24 @@ class Chebi:
   
   #@markdown `chebi_tags(chebi):` lê e a base de dados(`chebi`) e a divide em tags, onde cada tag representa uma intancia, e suas subtags representam seus atributos 
   def chebi_tags(self,file_path):
-    try:
-      import re
-      with open(file_path, 'r') as file:
-        data = file.read().replace('\n', '')
-    except:
-      print('não foi possivel abrir o aqrquivo ',file_path)
+    if file_path == '':
       return ['']
+
+    if exists(path_to_file):
+      try:
+        with open(file_path, 'r') as file:
+          data = file.read().replace('\n', '')
+      except:
+        print('não foi possivel abrir o aqrquivo ',file_path)
+    else:
+      try:
+        url = "https://ftp.ebi.ac.uk/pub/databases/chebi/ontology/chebi.owl"
+        filename = wget.download(url)
+        with open(file_name, 'r') as file:
+          data = file.read().replace('\n', '')
+      except
+        print('erro ao baixar')
+        return ['']
 
     data = re.sub(r'\s+',' ', data) #substituindo espaços duplos, quebras de linha e etc por um espaço único
     data = re.sub(r'<owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/BFO_0000051"/> <owl:someValuesFrom','<owl:hasPart', data)  #a tag em questão não é facilmente interpretavel e não estava sendo pega pelo regex, então foi alterada para melhor interpretação
