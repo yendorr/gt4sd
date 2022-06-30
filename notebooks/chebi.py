@@ -702,9 +702,9 @@ class Chebi:
         file.close()
 
     def load(self,file_name):
-        """try load self.name.txt"""
+        """try load file_name"""
         try:
-            file = open(self.name+'.txt','r')
+            file = open(file_name,'r')
             dataPickle = file.read()
             file.close()
             self.__dict__ = cPickle.loads(dataPickle)
