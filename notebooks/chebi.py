@@ -21,7 +21,10 @@ import sys
 # notebooks/
 sys.path.append('/sascorer')
 
-from sascorer import sascorer
+try:
+    from sascorer import sascorer
+except:
+    import sascorer
 
 import numpy as np
 import pandas as pd
@@ -66,7 +69,7 @@ class Chebi:
     #@markdown `count_folhas:`
     self.count_folhas = Counter()
     #@markdown `atualizado:` usado pelos algoritmos recursivos para verificar  se um nó já foi visitado para evitar recontagens
-    self.atualizado = dict()
+    self.atualizado = defaultdict(lambda:False)
     #@markdown `pertencente:` tentando usar programação dinamica nas funções has ancestral
     self.pertencente = defaultdict(lambda:False) # -1 não testado, 0 testado e ta fora, 1 testado e ta dentro 
     #@markdown `profundidade:` variavel memoria para programação dinamica, usada para otimizar a função
@@ -144,9 +147,7 @@ class Chebi:
   
   #@markdown `zera_atualizado():` desmarca todos os nós, para que uma função recursiva possa ir remarcando-os de acordo com seu algoritmo
   def zera_atualizado(self):
-    for i in self.atualizado:
-      self.atualizado[i] = False
-  
+    self.atualizado = defaultdict(lambda:False)
   
   #@markdown `zera_profundidade`
   def zera_profudidade(self):
@@ -267,7 +268,7 @@ class Chebi:
     if rotulo not in self.nodes:
       return False
     pais = self.pais[rotulo]
-    if pais == []:
+    if len(pais) == 0:
       return False
     if alvo in pais:
       return True
@@ -562,7 +563,6 @@ class Chebi:
           texto_numerico += str( descritor(mol) )+', '
 
         texto_data += texto_numerico + texto_classes[:-1] +'\n'
-        print(texto_data)
       except:
         continue
 
@@ -610,7 +610,7 @@ class Chebi:
     if self.profundidade_no[id] > 0:
       return self.profundidade_no[id]
 
-    if self.filhos[id] == []:
+    if len(self.filhos[id]) == 0:
       self.profundidade_no[id] = 1
       return 1
 
@@ -685,3 +685,11 @@ class Chebi:
     if numPais > maior['pais']:
       maior['pais'] = numPais
       maior['idp'] = id
+
+    def printa(self,node,nivel=0,chebi=self):
+        if chebi.atualizado[node]:
+            return
+        chebi.atualizado[node] = True
+        print(f"{'| '*nivel}├{node}")
+        for filho in chebi.filhos[node]:
+            printa(filho,nivel=nivel+1,chebi=chebi)
