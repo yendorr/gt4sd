@@ -3,6 +3,7 @@ from tqdm.auto import tqdm
 from collections import defaultdict
 from collections import Counter
 import re
+import pickle
 
 # !pip install kora -q
 # import kora.install.rdkit
@@ -693,3 +694,19 @@ class Chebi:
         print(f"{'| '*nivel}├{node}")
         for filho in chebi.filhos[node]:
             printa(filho,nivel=nivel+1,chebi=chebi)
+    
+    def save(self,file_name):
+        """save class as file_name"""
+        file = open(file_name,'w')
+        file.write(cPickle.dumps(self.__dict__))
+        file.close()
+
+    def load(self,file_name):
+        """try load self.name.txt"""
+        try:
+            file = open(self.name+'.txt','r')
+            dataPickle = file.read()
+            file.close()
+            self.__dict__ = cPickle.loads(dataPickle)
+        except:
+            print(f'{file_name} não encontrado')    
