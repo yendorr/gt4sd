@@ -3,10 +3,7 @@ from tqdm.auto import tqdm
 from collections import defaultdict
 from collections import Counter
 import re
-
 import pickle
-from os.path import exists
-import wget
 
 # !pip install kora -q
 # import kora.install.rdkit
@@ -105,30 +102,18 @@ class Chebi:
   
   #@markdown `chebi_tags(chebi):` lê e a base de dados(`chebi`) e a divide em tags, onde cada tag representa uma intancia, e suas subtags representam seus atributos 
   def chebi_tags(self,file_path):
-    if file_path == '':
+    try:
+      import re
+      with open(file_path, 'r') as file:
+        data = file.read().replace('\n', '')
+    except:
+      print('não foi possivel abrir o aqrquivo ',file_path)
       return ['']
-
-    if exists(path_to_file):
-      try:
-        with open(file_path, 'r') as file:
-          data = file.read().replace('\n', '')
-      except:
-        print('não foi possivel abrir o aqrquivo ',file_path)
-    else:
-      try:
-        url = "https://ftp.ebi.ac.uk/pub/databases/chebi/ontology/chebi.owl"
-        filename = wget.download(url)
-        with open(file_name, 'r') as file:
-          data = file.read().replace('\n', '')
-      except
-        print('erro ao baixar')
-        return ['']
 
     data = re.sub(r'\s+',' ', data) #substituindo espaços duplos, quebras de linha e etc por um espaço único
     data = re.sub(r'<owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/BFO_0000051"/> <owl:someValuesFrom','<owl:hasPart', data)  #a tag em questão não é facilmente interpretavel e não estava sendo pega pelo regex, então foi alterada para melhor interpretação
     data = re.sub(r'<owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/RO_0000087"/> <owl:someValuesFrom','<owl:hasRole', data)   #a tag também apresentava o mesmo problema
-
-# data = re.sub(r'owl:someValuesFrom','rdfs:subClassOf',data)
+    # data = re.sub(r'owl:someValuesFrom','rdfs:subClassOf',data)
 
     express = re.compile(r'<owl:Class.*?</owl:Class>')
 
@@ -701,24 +686,24 @@ class Chebi:
       maior['pais'] = numPais
       maior['idp'] = id
 
-    def printa(self,node,nivel=0,chebi=self):
-        if chebi.atualizado[node]:
+  def printa(self,node,nivel=0):
+        if self.atualizado[node]:
             return
-        chebi.atualizado[node] = True
+        self.atualizado[node] = True
         print(f"{'| '*nivel}├{node}")
-        for filho in chebi.filhos[node]:
-            printa(filho,nivel=nivel+1,chebi=chebi)
+        for filho in self.filhos[node]:
+            printa(filho,nivel=nivel+1)
     
-    def save(self,file_name):
+  def save(self,file_name):
         """save class as file_name"""
         file = open(file_name,'w')
         file.write(cPickle.dumps(self.__dict__))
         file.close()
 
-    def load(self,file_name):
-        """try load file_name"""
+  def load(self,file_name):
+        """try load self.name.txt"""
         try:
-            file = open(file_name,'r')
+            file = open(self.name+'.txt','r')
             dataPickle = file.read()
             file.close()
             self.__dict__ = cPickle.loads(dataPickle)
