@@ -692,20 +692,20 @@ class Chebi:
         self.atualizado[node] = True
         print(f"{'| '*nivel}├{node}")
         for filho in self.filhos[node]:
-            printa(filho,nivel=nivel+1)
+            self.printa(filho,nivel=nivel+1)
     
   def save(self,file_name):
         """save class as file_name"""
         file = open(file_name,'w')
-        file.write(cPickle.dumps(self.__dict__))
+        file.write(pickle.dumps(self.__dict__))
         file.close()
 
   def load(self,file_name):
         """try load self.name.txt"""
         try:
-            file = open(self.name+'.txt','r')
+            file = open(f'{file_name}.obj','r')
             dataPickle = file.read()
             file.close()
-            self.__dict__ = cPickle.loads(dataPickle)
+            self.__dict__ = pickle.loads(dataPickle)
         except:
             print(f'{file_name} não encontrado')    
