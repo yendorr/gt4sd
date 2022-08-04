@@ -70,11 +70,11 @@ class Chebi:
     #@markdown `count_folhas:`
     self.count_folhas = Counter()
     #@markdown `atualizado:` usado pelos algoritmos recursivos para verificar  se um nó já foi visitado para evitar recontagens
-    self.atualizado = defaultdict(lambda:False)
+    self.atualizado = defaultdict(bool)
     #@markdown `pertencente:` tentando usar programação dinamica nas funções has ancestral
-    self.pertencente = defaultdict(lambda:False) # -1 não testado, 0 testado e ta fora, 1 testado e ta dentro 
+    self.pertencente = defaultdict(bool) # -1 não testado, 0 testado e ta fora, 1 testado e ta dentro 
     #@markdown `profundidade:` variavel memoria para programação dinamica, usada para otimizar a função
-    self.profundidade_no = defaultdict(lambda:0)
+    self.profundidade_no = defaultdict(int)
     #@markdown `classes_expressao:` expressão regular usada para extrair as classes de uma instância
     self.classes_expressao = re.compile(r'<.*?:([a-zA-z]*) .*?(CHEBI_[0-9]*)')
     #@markdown `atributos_expressao:` expressão regular usada para extrair os atributos de uma instância(mais pra pegar os smiles mesmo)
@@ -147,11 +147,11 @@ class Chebi:
   
   #@markdown `zera_atualizado():` desmarca todos os nós, para que uma função recursiva possa ir remarcando-os de acordo com seu algoritmo
   def zera_atualizado(self):
-    self.atualizado = defaultdict(lambda:False)
+    self.atualizado = defaultdict(bool)
   
   #@markdown `zera_profundidade`
   def zera_profudidade(self):
-    self.profundidade_no = defaultdict(lambda:0)
+    self.profundidade_no = defaultdict(int)
 
   
   #@markdown `create_hierarchy():` cria a hierarquia com rotulos(instancias sem smiles) 
@@ -297,7 +297,7 @@ class Chebi:
   
   #@markdown as funções `has_ancestral(rorulos,alvo)` e `has_ancestral2(rotulo,alvo)` dependem uma da outra para funcionar
   def zera_pertencente(self):
-    self.pertencente = defaultdict(lambda:False)
+    self.pertencente = defaultdict(bool)
 
   
   #@markdown `att_count_raiz():` função para contar quantas instâncias cada rotulo possui
