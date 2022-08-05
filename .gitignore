@@ -140,6 +140,7 @@ logs
 test
 .DS_Store
 sandbox.py
+oracle
 
 *.lock
 notebooks/*.owl
@@ -149,4 +150,3 @@ notebooks/clus/*.xval
 notebooks/clus/*.out
 notebooks/clus/*.txt
 
-oracle
