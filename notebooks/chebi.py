@@ -3,7 +3,10 @@ from tqdm.auto import tqdm
 from collections import defaultdict
 from collections import Counter
 import re
+<<<<<<< HEAD
 import pickle
+=======
+>>>>>>> 121d692 (n sei usa o git)
 
 # !pip install kora -q
 # import kora.install.rdkit

@@ -150,3 +150,11 @@ notebooks/clus/*.out
 notebooks/clus/*.txt
 
 oracle
+
+*.lock
+notebooks/*.owl
+notebooks/clus/*.arff
+notebooks/clus/*.s
+notebooks/clus/*.xval
+notebooks/clus/*.out
+notebooks/clus/*.txt
