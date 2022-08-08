@@ -20,12 +20,6 @@ import gt4sd.properties.utils as ut
 #https://future-chem.com/rdkit-sa-score/#toc5
 import sys
 # notebooks/
-sys.path.append('/sascorer')
-
-try:
-    from sascorer import sascorer
-except:
-    import sascorer
 
 import numpy as np
 import pandas as pd
@@ -472,16 +466,15 @@ class Chebi:
   
   #@markdown `save_arff(dir):` cria o arquivo arff e o salva em um diretrio(`dir`)
   def save_arff(self,dir):
-    texto = '''@relation simple
+    propriedades = ['peso','area','logp','plogp','solubilidade','qed','sas','scs','bertz','N_aneis',
+                    'N_aneis_aromaticos','N_aneis_grandes','N_aneis_heterociclos','N_atoms','N_ligacoes_ratacionaveis',
+                    'N_centros','hba','hbd','drd2','gsk3b','jnk3']
 
-    @attribute peso numeric
-    @attribute area numeric
-    @attribute solubilidade numeric
-    @attribute druglikness numeric
-    @attribute SAscore numeric
-    @attribute HBA numeric
-    @attribute HBD numeric
-    @attribute class hierarchical '''
+    texto = '''@relation simple
+    '''
+    for propriedade in propriedades:
+      texto += '@attribute '+propriedade+' numeric\n'
+    texto += '@attribute class hierarchical '
 
     self.zera_atualizado()
 
@@ -703,16 +696,17 @@ class Chebi:
     
   def save(self,file_name):
         """save class as file_name"""
-        file = open(file_name,'w')
+        file = open(file_name,'wb')
         file.write(pickle.dumps(self.__dict__))
         file.close()
 
   def load(self,file_name):
         """try load self.name.txt"""
         try:
-            file = open(f'{file_name}.obj','r')
+            file = open(f'{file_name}','rb')
             dataPickle = file.read()
             file.close()
             self.__dict__ = pickle.loads(dataPickle)
         except:
-            print(f'{file_name} não encontrado')    
+          raise Exception(f'Arquivo {file_name} não encontrado')
+            
