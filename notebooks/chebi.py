@@ -12,11 +12,10 @@ import pickle
 # import sys
 # sys.path.append('/usr/local/lib/python3.7/site-packages/')
 from rdkit import Chem
-from rdkit.Chem import Draw
-from rdkit.Chem.Draw import IPythonConsole
-from rdkit.Chem import Descriptors
-from rdkit.Chem import AllChem
-from rdkit import DataStructs
+
+
+import gt4sd.properties.molecules.functions as prop
+import gt4sd.properties.utils as ut
 
 #https://future-chem.com/rdkit-sa-score/#toc5
 import sys
@@ -37,6 +36,18 @@ from matplotlib.ticker import PercentFormatter
 
 import numpy as np
 from collections import defaultdict
+
+def drd2(mol):
+    func = ut.get_activity_fn('drd2')
+    return prop.activity_against_target(mol=mol, affinity_fn=func)
+
+def gsk3b(mol):
+    func = ut.get_activity_fn('gsk3b')
+    return prop.activity_against_target(mol=mol, affinity_fn=func)
+
+def jnk3(mol):
+    func = ut.get_activity_fn('jnk3')
+    return prop.activity_against_target(mol=mol, affinity_fn=func)
 
 #@title `Chebi(file_path):` classe usada para manusear a base de dados(file_path) como um grafo
 class Chebi:
@@ -515,15 +526,10 @@ class Chebi:
 
     '''
 
-    descritores = [
-      Descriptors.MolWt,
-      Descriptors.TPSA,
-      Descriptors.MolLogP,
-      Descriptors.qed,
-      sascorer.calculateScore,
-      Chem.rdMolDescriptors.CalcNumLipinskiHBA,
-      Chem.rdMolDescriptors.CalcNumLipinskiHBD
-    ]
+    descritores = [prop.mol_weight,prop.tpsa,prop.logp,prop.plogp,prop.esol,prop.qed,prop.sas,prop.scscore,
+            prop.bertz,prop.number_of_rings,prop.num_aromatic_rings,prop.number_of_large_rings,
+            prop.number_of_heterocycles,prop.num_atoms,prop.num_rotatable_bonds,prop.number_of_stereocenters,
+            prop.num_H_acceptors,prop.num_H_donors,drd2,gsk3b,jnk3]
     
     pbar = tqdm(self.smiles_tags)
     pbar.set_description("Processando smiles")
