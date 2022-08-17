@@ -129,11 +129,7 @@ class Chebi:
   #@markdown `add_node(vertice):` função para adcionar um novo `vertice` na hierarquia
   def add_node(self, value):
     self.nodes.add(value)
-    # self.count[value] = 0 #de dict para counter isso n é mais preciso
-    self.atualizado[value] = False
-    # self.count.update({value,0})
 
-  
   #@markdown `add_edge(pai,filho):` função para adcionar relação entre dois vertices
   def add_edge(self, from_node, to_node, distance=1):
     '''
@@ -150,7 +146,6 @@ class Chebi:
     self.distances[(from_node, to_node)] = distance
     self.distances[( to_node,from_node)] = distance
 
-  
   #@markdown `zera_atualizado():` desmarca todos os nós, para que uma função recursiva possa ir remarcando-os de acordo com seu algoritmo
   def zera_atualizado(self):
     self.atualizado = defaultdict(bool)
@@ -463,9 +458,10 @@ class Chebi:
 
     return smiles_txt
 
-  
+
   #@markdown `save_arff(dir):` cria o arquivo arff e o salva em um diretrio(`dir`)
   def save_arff(self,dir):
+
     propriedades = ['peso','area','logp','plogp','solubilidade','qed','sas','scs','bertz','N_aneis',
                     'N_aneis_aromaticos','N_aneis_grandes','N_aneis_heterociclos','N_atoms','N_ligacoes_ratacionaveis',
                     'N_centros','hba','hbd','drd2','gsk3b','jnk3']
@@ -482,14 +478,17 @@ class Chebi:
       if raiz in self.nodes:
         texto += self.texto_hierarquia(raiz)
 
-    texto += self.texto_data()
-
-    self.texto = texto
-
     file2write=open(dir,'w')
-    file2write.write(self.texto)
+    file2write.write(texto)
+    file2write.write('''
+      @data
+
+    ''')
     file2write.close()
-    return texto
+
+    self.texto_data(dir)
+
+    return
 
   
   #@markdown `texto_hierarquia(id):` cria um texto com a hierarquia apartir de um vertice(`id`), representando no padrão dos arquivos .arff
@@ -505,27 +504,30 @@ class Chebi:
     self.atualizado[id] = True
     return texto
 
-  
+
   #@markdown `texto_data():` cria um texto com as propriedades das moléculas e seus rótulos
-  def texto_data(self):
+  def texto_data(self,dir):
 
     self.zera_pertencente()
     for raiz in self.raizes:
       if raiz in self.nodes:
         self.marca_pertencente(raiz)
     
-    texto_data = '''
-      @data
-
-    '''
+    
 
     descritores = [prop.mol_weight,prop.tpsa,prop.logp,prop.plogp,prop.esol,prop.qed,prop.sas,prop.scscore,
             prop.bertz,prop.number_of_rings,prop.num_aromatic_rings,prop.number_of_large_rings,
             prop.number_of_heterocycles,prop.num_atoms,prop.num_rotatable_bonds,prop.number_of_stereocenters,
             prop.num_H_acceptors,prop.num_H_donors,drd2,gsk3b,jnk3]
+
+    try:
+      f = open(dir,'a')
+    except:
+      raise Exception("Erro ao abrir arquivo")
     
     pbar = tqdm(self.smiles_tags)
     pbar.set_description("Processando smiles")
+
     for tag in pbar:
 
       #bloco para guardar as classes da instancia
@@ -562,11 +564,12 @@ class Chebi:
         for descritor in descritores:
           texto_numerico += str( descritor(mol) )+', '
 
-        texto_data += texto_numerico + texto_classes[:-1] +'\n'
+        # texto_data += texto_numerico + texto_classes[:-1] +'\n'
+        f.write(texto_numerico + texto_classes[:-1] +'\n')
       except:
         continue
 
-    return texto_data
+    return f.close()
 
   
   #@markdown `faz_estatisticas(id):` calcula as estatisticas de um grafo apartir de sua raiz(`id`)
@@ -686,6 +689,8 @@ class Chebi:
       maior['pais'] = numPais
       maior['idp'] = id
 
+
+#@markdown `printa():` função para printar a hierarquia da dag
   def printa(self,node,nivel=0):
         if self.atualizado[node]:
             return
@@ -693,13 +698,17 @@ class Chebi:
         print(f"{'| '*nivel}├{node}")
         for filho in self.filhos[node]:
             self.printa(filho,nivel=nivel+1)
-    
+
+
+#@markdown `save():` função para salvar a DAG em um arquivo
   def save(self,file_name):
         """save class as file_name"""
         file = open(file_name,'wb')
         file.write(pickle.dumps(self.__dict__))
         file.close()
 
+
+#@markdown `load():` função para carregar a DAG de um arquivo
   def load(self,file_name):
         """try load self.name.txt"""
         try:
@@ -709,4 +718,3 @@ class Chebi:
             self.__dict__ = pickle.loads(dataPickle)
         except:
           raise Exception(f'Arquivo {file_name} não encontrado')
-            
