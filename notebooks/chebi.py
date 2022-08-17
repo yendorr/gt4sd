@@ -3,6 +3,7 @@ from tqdm.auto import tqdm
 from collections import defaultdict
 from collections import Counter
 import re
+import os
 
 import pickle
 
@@ -560,9 +561,10 @@ class Chebi:
         #bloco pra calcular os descritores dos smiles
         texto_numerico = ''
         mol = Chem.AddHs(Chem.MolFromSmiles(smiles))
-
+        sys.stdout = open(os.devnull, 'w')
         for descritor in descritores:
           texto_numerico += str( descritor(mol) )+', '
+        sys.stdout = sys.__stdout__
 
         # texto_data += texto_numerico + texto_classes[:-1] +'\n'
         f.write(texto_numerico + texto_classes[:-1] +'\n')
@@ -662,7 +664,7 @@ class Chebi:
     for filho in self.filhos[id]:
       filhos += self.conta_filhos(filho)
     return filhos
-    
+
   
   #@markdown `mais_parentes():` função forçadinha pra fazer as estatisticas, poderia ser mais modular mas maior preguiça
   def mais_parentes(self,
